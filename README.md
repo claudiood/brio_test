@@ -23,6 +23,15 @@ Apesar das duas simulações acima, o núcleo da automação está **operacional
 
 A persistência foi feita no **Google Sheets** por uma escolha prática: as credenciais próprias já estavam disponíveis.
 
+### Como rodar (n8n)
+
+1. Importe o fluxo: no n8n, *Workflows → Import from File →* selecione `n8n/brio.json`.
+2. Configure as credenciais usadas pelos nós:
+   - **Groq** (`groqApi`) — para a geração de hashtags via IA.
+   - **Google Sheets** (OAuth2) — para o nó *Salvar no Google Sheets*. Ajuste o `documentId` para uma planilha sua.
+3. Clique em **Disparar Manualmente (Demo)**. O nó *Payload ClickUp (Exemplo)* injeta um payload simulado e o fluxo roda de ponta a ponta.
+4. As imagens em `n8n/` mostram cada etapa executada.
+
 ## Desafio 2 — Pipeline em Python
 
 O script recebe os leads de um formulário de diagnóstico, valida e trata os dados, persiste em banco e cria uma tarefa para o time comercial. O código, instruções de execução e detalhes técnicos estão em [`python/`](./python) (ver [`python/README.md`](./python/README.md)).
@@ -46,3 +55,5 @@ Pontos de robustez adicionais:
 - **Idempotência** — reprocessar o mesmo JSON não duplica leads (upsert por e-mail no banco) nem tarefas no ClickUp.
 - **Testes automatizados** — a etapa de validação/normalização é coberta por testes para garantir o funcionamento.
 - **Resiliência** — um lead nunca se perde por falha em uma etapa seguinte.
+
+Ambas as aplicações tiveram como objetivo a entrega de soluções funcionais. Com mais tempo e as credenciais das ferramentas, seria possível desenvolver soluções mais robustas. 
