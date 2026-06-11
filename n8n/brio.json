@@ -1,0 +1,500 @@
+{
+  "name": "brio",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "taskId",
+              "value": "={{ $json.body?.task_id ?? $json.body?.id ?? $json.task_id ?? 'TASK-SIM-001' }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "taskName",
+              "value": "={{ $json.body?.name ?? $json.name ?? 'Post simulado — Lançamento Brio Lab' }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "description",
+              "value": "={{ $json.body?.description ?? $json.description ?? 'Descrição simulada da postagem aprovada no ClickUp.' }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "status",
+              "value": "={{ $json.body?.status ?? $json.status ?? 'aprovado' }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "caption",
+              "value": "={{ $json.body?.custom_fields?.legenda ?? $json.legenda ?? 'Novidade chegando! ✨ Prepare-se para transformar sua rotina com o nosso novo lançamento da Brio Lab.' }}",
+              "type": "string"
+            },
+            {
+              "id": "a6",
+              "name": "postDate",
+              "value": "={{ $json.body?.custom_fields?.data_postagem ?? $json.data_postagem ?? $now.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "a7",
+              "name": "contentType",
+              "value": "={{ $json.body?.custom_fields?.tipo_conteudo ?? $json.tipo_conteudo ?? 'Feed' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bee9bfca-c378-487e-be8c-f09c6368f4bb",
+      "name": "Ler Dados da Tarefa",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "aprov",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3e68381d-9553-4139-971f-8f9cc43cdd07",
+      "name": "Status é aprovado?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        720,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "groqApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"model\": \"llama-3.3-70b-versatile\", \"temperature\": 0.7, \"messages\": [ { \"role\": \"system\", \"content\": \"Você é um especialista em social media. Gere de 8 a 12 hashtags em português, relevantes para um post de Instagram, a partir da legenda fornecida. Responda APENAS com as hashtags separadas por espaço, sem nenhum outro texto e sem numeração.\" }, { \"role\": \"user\", \"content\": {{ JSON.stringify($json.caption) }} } ] }",
+        "options": {}
+      },
+      "id": "fb81a0a8-a9da-43ed-906c-d2df1978d82e",
+      "name": "Groq - Gerar Hashtags",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        272
+      ],
+      "credentials": {
+        "groqApi": {
+          "id": "jcNlPGINewtmGQxZ",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "date",
+              "value": "={{ $now.setZone('America/Sao_Paulo').toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "task_id",
+              "value": "={{ $('Ler Dados da Tarefa').item.json.taskId }}",
+              "type": "string"
+            },
+            {
+              "id": "b3",
+              "name": "task_name",
+              "value": "={{ $('Ler Dados da Tarefa').item.json.taskName }}",
+              "type": "string"
+            },
+            {
+              "id": "b4",
+              "name": "description",
+              "value": "={{ $('Ler Dados da Tarefa').item.json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "b5",
+              "name": "content_type",
+              "value": "={{ $('Ler Dados da Tarefa').item.json.contentType }}",
+              "type": "string"
+            },
+            {
+              "id": "b6",
+              "name": "post_date",
+              "value": "={{ $('Ler Dados da Tarefa').item.json.postDate }}",
+              "type": "string"
+            },
+            {
+              "id": "b7",
+              "name": "caption",
+              "value": "={{ $('Ler Dados da Tarefa').item.json.caption }}",
+              "type": "string"
+            },
+            {
+              "id": "b8",
+              "name": "hashtags",
+              "value": "={{ $json.choices[0].message.content.trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "b9",
+              "name": "status",
+              "value": "={{ $('Ler Dados da Tarefa').item.json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b7e58d5b-f2f6-489d-92c0-92858f40db24",
+      "name": "Montar Registro",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1D-n_rUoWJfG5Vrsi1CMGy6DkpNfasQlEhBDJAdMnehU",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "task_id",
+              "displayName": "task_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "task_name",
+              "displayName": "task_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "content_type",
+              "displayName": "content_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "post_date",
+              "displayName": "post_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "caption",
+              "displayName": "caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hashtags",
+              "displayName": "hashtags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d0e20fbb-7e05-41e0-a1d2-d5c66b6922f4",
+      "name": "Salvar no Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1392,
+        272
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "o8pTBuW4mNiFB5AN",
+          "name": "Cláudio Duarte"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://webhook.site/",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"canal\": \"whatsapp\", \"para\": \"5511999999999\", \"mensagem\": {{ JSON.stringify('✅ Post APROVADO e salvo!\\n\\n📝 ' + $json.task_name + '\\n🗓️ Data: ' + $json.post_date + '\\n🏷️ Hashtags: ' + $json.hashtags) }} }",
+        "options": {}
+      },
+      "id": "c5acec7e-b83b-42d8-90f6-9b4eecc2f5dc",
+      "name": "Notificar (WhatsApp simulado)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1616,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "n1",
+              "name": "resultado",
+              "value": "Ignorado — status diferente de aprovado, nenhuma automação executada.",
+              "type": "string"
+            },
+            {
+              "id": "n2",
+              "name": "status_recebido",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0c9ba147-9300-423d-ac9c-3c47caf5d58c",
+      "name": "Status não aprovado (ignorado)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        416
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c564c974-ac1a-46eb-9b2e-65380ebb8bdd",
+      "name": "Disparar Manualmente (Demo)",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        128,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Payload de exemplo no formato que um webhook do ClickUp enviaria\n// (tarefa cujo status mudou para 'aprovado'). Em produção, isso viria do body do webhook.\nreturn [\n  {\n    json: {\n      event: 'taskStatusUpdated',\n      body: {\n        task_id: 'CU-86a1b2c3',\n        name: 'Post: Lançamento da nova linha Brio Lab',\n        description: 'Arte de feed para o lançamento da linha de skincare. Foco em benefícios + CTA para o link na bio.',\n        status: 'aprovado',\n        custom_fields: {\n          legenda: 'Sua pele merece o melhor! 💧 Conheça a nova linha de skincare da Brio Lab — hidratação e renovação em um só produto. Link na bio! ✨',\n          data_postagem: '2026-06-15',\n          tipo_conteudo: 'Feed'\n        }\n      }\n    }\n  }\n];"
+      },
+      "id": "e8078390-4864-4eab-bbb1-b2a685f54b07",
+      "name": "Payload ClickUp (Exemplo)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        352
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ler Dados da Tarefa": {
+      "main": [
+        [
+          {
+            "node": "Status é aprovado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status é aprovado?": {
+      "main": [
+        [
+          {
+            "node": "Groq - Gerar Hashtags",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Status não aprovado (ignorado)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq - Gerar Hashtags": {
+      "main": [
+        [
+          {
+            "node": "Montar Registro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Registro": {
+      "main": [
+        [
+          {
+            "node": "Salvar no Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar no Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Notificar (WhatsApp simulado)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Disparar Manualmente (Demo)": {
+      "main": [
+        [
+          {
+            "node": "Payload ClickUp (Exemplo)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload ClickUp (Exemplo)": {
+      "main": [
+        [
+          {
+            "node": "Ler Dados da Tarefa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "3cb78e1b-3b69-48a7-bc79-6d60fc49f7d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "b71e2d48b2223f24d7c5662a88abc4cec94dbf75e2cfa1bd48ff15e2b292714a"
+  },
+  "nodeGroups": [],
+  "id": "tJVXInI4AMxXbNJdLdrF3",
+  "tags": []
+}
