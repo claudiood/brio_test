@@ -1,0 +1,23 @@
+[
+  {
+    "nome": "  ana   beatriz souza ",
+    "telefone": "(11) 98765-4321",
+    "email": "ANA.Beatriz@Clinica.com.BR ",
+    "especialidade": "Dermatologia",
+    "principal_desafio": "Agenda com muitos horários ociosos durante a semana"
+  },
+  {
+    "nome": "Carlos Eduardo",
+    "telefone": "+55 21 3344-5566",
+    "email": "carlos@consultorio.com",
+    "especialidade": "Ortopedia",
+    "principal_desafio": "Dificuldade em fidelizar pacientes após a primeira consulta"
+  },
+  {
+    "nome": "fernanda  lima",
+    "telefone": "31987654321",
+    "email": "  Fernanda.Lima@Saude.io",
+    "especialidade": "Nutrição",
+    "principal_desafio": "Pouca presença digital e baixa captação de novos pacientes"
+  }
+]

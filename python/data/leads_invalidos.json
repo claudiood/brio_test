@@ -1,0 +1,30 @@
+[
+  {
+    "nome": "João Sem Telefone",
+    "telefone": "",
+    "email": "joao@clinica.com",
+    "especialidade": "Cardiologia",
+    "principal_desafio": "Quer aumentar o número de consultas particulares"
+  },
+  {
+    "nome": "Mariana Email Ruim",
+    "telefone": "11999998888",
+    "email": "mariana(arroba)email.com",
+    "especialidade": "Pediatria",
+    "principal_desafio": "Retenção de pacientes"
+  },
+  {
+    "nome": "Pedro Telefone Curto",
+    "telefone": "1234",
+    "email": "pedro@clinica.com",
+    "especialidade": "Clínico Geral",
+    "principal_desafio": "Captação de leads"
+  },
+  {
+    "nome": "Sem Especialidade",
+    "telefone": "11988887777",
+    "email": "contato@clinica.com",
+    "especialidade": "   ",
+    "principal_desafio": ""
+  }
+]
