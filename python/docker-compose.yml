@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: brio-diagnostico-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # O app cria o banco "brio_diagnostico" sozinho no primeiro run;
+      # aqui subimos apenas o banco administrativo padrão.
+      POSTGRES_DB: postgres
+    ports:
+      # Mantém a porta 5436 usada no .env.example. Se essa porta já estiver
+      # ocupada na sua máquina, troque o lado esquerdo (ex.: "5437:5432")
+      # e ajuste DB_PORT no .env.
+      - "5436:5432"
+    volumes:
+      - brio_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  brio_pgdata:
